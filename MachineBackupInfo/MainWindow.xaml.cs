@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using MachineBackupInfo.Classes;
 
+
 namespace MachineBackupInfo
 {
     /// <summary>
@@ -30,5 +31,27 @@ namespace MachineBackupInfo
             stats = new Statistics();
             DataContext = stats;
         }
+
+        private async void MetroWindow_ContentRendered(object sender, EventArgs e)
+        {
+            Dictionary<string, bool> test = new Dictionary<string, bool>();
+            await new Task(() =>
+             {
+                 var result = stats.PropertiesContainingBackups(stats.BackupDirectory);
+                 test = result;
+
+             }).ConfigureAwait(false);
+            foreach(var t in test)
+            {
+                listBxPropertiesWithBackups.Items.Add(t.Value + " " + t.Key);
+            }
+            
+           
+           
+        }
+       
     }
 }
+
+
+ 
