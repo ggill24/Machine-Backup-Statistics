@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace MachineBackupInfo.Classes
 {
-    class Statistics
+    public class Statistics
     {
         public readonly string BackupDirectory = @"\\fileserver\public storage canada\public\machine backups";
 
@@ -27,10 +27,16 @@ namespace MachineBackupInfo.Classes
         public int UserBackups { get; set; }
 
         //Properties with backups
-        public int PropertiesWithBackups { get; set; }
+        public int PropertiesWithBackupsAmt { get; set; }
+
+        //Number of properties without backups
+        public int PropertiesWithNoBackupsAmt { get; set; }
 
         //Properties without backups
-        public int PropertiesWithNoBackups { get; set; }
+        public Dictionary<string, bool> PropertiesWithoutBackups { get; set; }
+
+        //Properties with backups
+        public Dictionary<string, bool> PropertiesWithBackups { get; set; }
 
         //Users with backups
         public int UsersWithBackups { get; set; }
@@ -38,11 +44,15 @@ namespace MachineBackupInfo.Classes
         //Users without backups
         public int UsersWithoutBackups { get; set; }
 
+        //Will Reuse Statistics Saved In Memory The First Time The Program Is Ran But Will Not Be Real Time (Will Speed Loading By A Lot Though)
+        public bool CacheData { get; set; }
+
+
+
         public Statistics()
         {
-            /*BackupTotal = DirectoryCount(BackupDirectory);
-            PropertyTotal = PropertyDirectoryCount(BackupDirectory);*/
-           // var t = PropertiesWithbackups(BackupDirectory);
+            PropertiesWithoutBackups = new Dictionary<string, bool>();
+            PropertiesWithBackups = new Dictionary<string, bool>();
 
         }
 
@@ -59,11 +69,8 @@ namespace MachineBackupInfo.Classes
             return Directory.Exists(path) ? Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).Count() : 0;
         }
         //Gets number of Properties that have a backup file
-        public Dictionary<string, bool> PropertiesContainingBackups(string path)
+        public void PropertieWithBackups(string path)
         {
-            // if (!Directory.Exists(path)) return 0;
-
-            Dictionary<string, bool> backups = new Dictionary<string, bool>();
 
             //Gets root directory path of Properties (Example: .\P0010 but not the children)
             var propDirectories = Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).ToArray();
@@ -88,16 +95,68 @@ namespace MachineBackupInfo.Classes
                             {
                                 string[] files = Directory.GetFiles(p);
                                 bool containsBackup = files.Any(x => x.Contains(".vbk"));
-                                backups.Add(p, containsBackup);
+
+                                if (containsBackup)
+                                {
+                                    PropertiesWithBackupsAmt++;
+                                    PropertiesWithBackups.Add(p, containsBackup);
+                                }
                             }
                         }
                     }
                 }
             }
-            return backups;
+        }
+        //Gets number of Properties that have don't hav a backup file
+        public void PropertieWithoutBackups(string path)
+        {
+
+            //Gets root directory path of Properties (Example: .\P0010 but not the children)
+            var propDirectories = Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).ToArray();
+
+            //Directories in parent
+            foreach (var di in propDirectories)
+            {
+                //Main/Slave folder (some properties will have more (ex: 3 computers)
+                string[] children = Directory.GetDirectories(di);
+
+                foreach (var c in children)
+                {
+                    string child = c;
+
+                    if (Directory.GetDirectories(child).Count() <= 0)
+                    {
+                        string[] infant = Directory.GetDirectories(child);
+
+                        foreach (var p in infant)
+                        {
+                            if (Directory.Exists(p))
+                            {
+                                string[] files = Directory.GetFiles(p);
+                                bool containsBackup = files.Any(x => x.Contains(".vbk"));
+
+                                if (!containsBackup)
+                                {
+                                    PropertiesWithNoBackupsAmt++;
+                                    PropertiesWithoutBackups.Add(p, containsBackup);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(!PropertiesWithoutBackups.ContainsKey(child))
+                        {
+                            PropertiesWithoutBackups.Add(child, false);
+                        }
+                    }
+                }
+            }
         }
     }
 }
+
+     
 
 
 

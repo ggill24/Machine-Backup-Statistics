@@ -14,7 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using MachineBackupInfo.Classes;
-
+using System.ComponentModel;
+using System.IO;
+using MachineBackupInfo.Windows;
 
 namespace MachineBackupInfo
 {
@@ -28,30 +30,30 @@ namespace MachineBackupInfo
         public MainWindow()
         {
             InitializeComponent();
+            IOHandler.CreateRootPath();
+            IOHandler.CreateChildDirectories();
             stats = new Statistics();
             DataContext = stats;
+
         }
 
-        private async void MetroWindow_ContentRendered(object sender, EventArgs e)
+        private void btnPropertyWithBackups_Click(object sender, RoutedEventArgs e)
         {
-            Dictionary<string, bool> test = new Dictionary<string, bool>();
-            await new Task(() =>
-             {
-                 var result = stats.PropertiesContainingBackups(stats.BackupDirectory);
-                 test = result;
-
-             }).ConfigureAwait(false);
-            foreach(var t in test)
-            {
-                listBxPropertiesWithBackups.Items.Add(t.Value + " " + t.Key);
-            }
-            
-           
-           
+            stats.PropertiesWithBackups.Clear();
+            BackUpInfoWindow bkupInfoWindowWithBackups = new BackUpInfoWindow("Properties With Backups (Cached = " + stats.CacheData.ToString() + ")", DataType.PropertiesWithBackups, stats.CacheData, stats);
+            bkupInfoWindowWithBackups.Show();
         }
-       
+
+        private void btnPropertyWithoutBackups_Click(object sender, RoutedEventArgs e)
+        {
+            stats.PropertiesWithoutBackups.Clear();
+            BackUpInfoWindow bkupInfoWindowWithoutBackups = new BackUpInfoWindow("Properties Without Backups (Cached = " + stats.CacheData.ToString() + ")", DataType.PropertiesWithNoBackups, stats.CacheData, stats);
+            bkupInfoWindowWithoutBackups.Show();
+        }
     }
 }
+
+       
 
 
  
