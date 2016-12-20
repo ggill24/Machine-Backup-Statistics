@@ -6,10 +6,13 @@
         xmlns:local="clr-namespace:MachineBackupInfo.Windows"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"              
         mc:Ignorable="d"
-        Title="BackUpInfoWindow" Height="460.524" Width="357.778">
+        Title="BackUpInfoWindow" Height="625" Width="936.667">
     <Grid>
-        <Label x:Name="lblTitle" Content="{Binding WindowTitle}" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="128,10,0,0" VerticalAlignment="Top"/>
-        <ListBox x:Name="listbxData" HorizontalAlignment="Left" Height="386" Margin="0,45,0,0" VerticalAlignment="Top" Width="100"/>
+        <Label x:Name="lblTitle" Content="{Binding WindowTitle}" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="26,10,0,0" VerticalAlignment="Top"/>
+        <ListBox x:Name="listbxType" HorizontalAlignment="Left" Height="445" Margin="145,120,0,0" VerticalAlignment="Top" Width="135"/>
+        <ListBox x:Name="listbxProperty" HorizontalAlignment="Left" Height="445" Margin="10,120,0,0" VerticalAlignment="Top" Width="135"/>
+        <ListBox x:Name="listbxHasBackup" HorizontalAlignment="Left" Height="445" Margin="285,120,0,0" VerticalAlignment="Top" Width="135"/>
+        <ListBox x:Name="listbxFullPath" HorizontalAlignment="Left" Height="445" Margin="425,120,0,0" VerticalAlignment="Top" Width="494"/>
 
     </Grid>
 </Controls:MetroWindow>

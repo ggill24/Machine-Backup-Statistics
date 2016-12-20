@@ -37,19 +37,14 @@ namespace MachineBackupInfo
 
         }
 
-        private void btnPropertyWithBackups_Click(object sender, RoutedEventArgs e)
+        private void btnPropertyData_Click(object sender, RoutedEventArgs e)
         {
             stats.PropertiesWithBackups.Clear();
-            BackUpInfoWindow bkupInfoWindowWithBackups = new BackUpInfoWindow("Properties With Backups (Cached = " + stats.CacheData.ToString() + ")", DataType.PropertiesWithBackups, stats.CacheData, stats);
+            BackUpInfoWindow bkupInfoWindowWithBackups = new BackUpInfoWindow("Properties With Backups (Cached = " + stats.CacheData.ToString() + ")", stats.CacheData, stats);
             bkupInfoWindowWithBackups.Show();
         }
 
-        private void btnPropertyWithoutBackups_Click(object sender, RoutedEventArgs e)
-        {
-            stats.PropertiesWithoutBackups.Clear();
-            BackUpInfoWindow bkupInfoWindowWithoutBackups = new BackUpInfoWindow("Properties Without Backups (Cached = " + stats.CacheData.ToString() + ")", DataType.PropertiesWithNoBackups, stats.CacheData, stats);
-            bkupInfoWindowWithoutBackups.Show();
-        }
+       
     }
 }
 

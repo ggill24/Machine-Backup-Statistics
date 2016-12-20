@@ -13,10 +13,9 @@
         <Label x:Name="lblBackupFolderCount" Content="{Binding BackupTotal}" HorizontalAlignment="Left" Margin="166,10,0,0" VerticalAlignment="Top"/>
         <Border BorderBrush="Orange" BorderThickness="2" HorizontalAlignment="Left" Height="510" VerticalAlignment="Top" Width="220" Margin="-2,-1,0,0"/>
         <Label x:Name="lblPropertyFolderCount" Content="{Binding PropertyTotal}" HorizontalAlignment="Left" Margin="177,36,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnPropertyWithBackups" Content="Properties With Backups" HorizontalAlignment="Left" Margin="19,203,0,0" VerticalAlignment="Top" Width="168" Click="btnPropertyWithBackups_Click"/>
+        <Button x:Name="btnPropertyData" Content="Property Data" HorizontalAlignment="Left" Margin="19,203,0,0" VerticalAlignment="Top" Width="168" Click="btnPropertyData_Click"/>
         <CheckBox x:Name="chkBxCacheData" Content="Cache Data" IsChecked="{Binding CacheData, Mode=OneWayToSource}" HorizontalAlignment="Left" Margin="9,151,0,0" VerticalAlignment="Top"/>
         <Label x:Name="lblStats" Content="Overview" HorizontalAlignment="Left" Margin="77,10,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="btnPropertyWithoutBackups" Content="Properties Without Backups" HorizontalAlignment="Left" Margin="19,246,0,0" VerticalAlignment="Top" Width="168" Click="btnPropertyWithoutBackups_Click"/>
 
     </Grid>
 </Controls:MetroWindow>

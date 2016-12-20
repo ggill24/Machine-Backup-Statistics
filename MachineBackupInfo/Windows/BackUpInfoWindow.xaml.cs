@@ -21,7 +21,7 @@ namespace MachineBackupInfo.Windows
     /// </summary>
     public partial class BackUpInfoWindow : MetroWindow
     {
-        DataType dataType;
+
 
         Statistics stats;
 
@@ -29,92 +29,79 @@ namespace MachineBackupInfo.Windows
 
         string title { get; set; }
 
+        List<Property> data = new List<Property>();
 
-        public BackUpInfoWindow(string title, DataType dataType, bool cacheData, Statistics statisticsClass)
+        public BackUpInfoWindow(string title, bool cacheData, Statistics statisticsClass)
         {
             InitializeComponent();
             DataContext = this;
             lblTitle.Content = title;
             stats = statisticsClass;
-            this.dataType = dataType;
             this.cacheData = cacheData;
             this.title = title;
             GetAndDisplayData();
         }
         void GetAndDisplayData()
         {
+            BackgroundWorker bg = new BackgroundWorker();
+            bg.DoWork += new DoWorkEventHandler(BackGroundDoWork);
+            bg.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackGroundWorkCompleted);
+            if (!bg.IsBusy) { bg.RunWorkerAsync(); }
+        }
 
-            //Cache Data
-            if (cacheData)
+
+
+        private void BackGroundDoWork(object sender, DoWorkEventArgs e)
+        {
+
+            if (cacheData && CachedInfo.PropertyData.Count <= 0)
             {
-                if (dataType == DataType.PropertiesWithBackups && CachedInfo.PropertiesWithBackups != null && CachedInfo.PropertiesWithBackups.Count > 0)
-                {
-                    foreach (var d in CachedInfo.PropertiesWithBackups)
-                    {
-                        listbxData.Items.Add(d);
-                    }
-                }
-                else if (dataType == DataType.PropertiesWithNoBackups && CachedInfo.PropertiesWithoutBackups != null && CachedInfo.PropertiesWithoutBackups.Count > 0)
-                {
-                    foreach (var d in CachedInfo.PropertiesWithBackups)
-                    {
-                        listbxData.Items.Add(d);
-                    }
-
-                }
+                data = stats.PropertyData(stats.BackupDirectory);
+                CachedInfo.PropertyData = data;
             }
             else
             {
-                BackgroundWorker bg = new BackgroundWorker();
-                bg.DoWork += new DoWorkEventHandler(BackGroundDoWork);
-                bg.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackGroundWorkCompleted);
-                if (!bg.IsBusy) { bg.RunWorkerAsync(); }
+                data = stats.PropertyData(stats.BackupDirectory);
             }
 
         }
-        private void BackGroundDoWork(object sender, DoWorkEventArgs e)
-        {
             
-          
-            switch (dataType)
+                
+            
+        
+        private void DisplayData(bool cacheData)
+        {
+            List<Property> _data = new List<Property>();
+            listbxFullPath.Items.Clear();
+            listbxHasBackup.Items.Clear();
+            listbxProperty.Items.Clear();
+            if (cacheData)
             {
-                case DataType.PropertiesWithBackups:
-                    stats.PropertieWithBackups(stats.BackupDirectory);
-                    CachedInfo.PropertiesWithBackups = stats.PropertiesWithBackups;
-                    break;
-                case DataType.PropertiesWithNoBackups:
-                    stats.PropertieWithoutBackups(stats.BackupDirectory);
-                    CachedInfo.PropertiesWithoutBackups = stats.PropertiesWithoutBackups;
-                    break;
+                _data = CachedInfo.PropertyData;
             }
-
-
-
-
+            else
+            {
+                _data = data;
+            }
+            for(int i = 0; i < _data.Count; i++)
+            {
+                listbxFullPath.Items.Add(_data[i].FullPath);
+                listbxHasBackup.Items.Add(_data[i].HasBackup);
+                listbxProperty.Items.Add(_data[i].PropertyName);
+            }
         }
         private void BackGroundWorkCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            listbxData.Items.Clear();
-
-            switch (dataType)
+            DisplayData(cacheData);
+        }
+        private string SanitizeString(string _string, int startIndex, int length)
+        {
+            if(_string.Length >= startIndex && _string.Length >= startIndex + length)
             {
-                case DataType.PropertiesWithBackups:
-                    foreach (var value in CachedInfo.PropertiesWithBackups.Keys)
-                    {
-                        string sanitized = value.ToString().Substring(58, 5);
-                        if (!listbxData.Items.Contains(sanitized)) { listbxData.Items.Add(sanitized); }
-                      
-                    }
-                    break;
-                case DataType.PropertiesWithNoBackups:
-                    foreach (var value in CachedInfo.PropertiesWithoutBackups.Keys)
-                    {
-                        string sanitized = value.ToString().Substring(58, 5);
-                        if (!listbxData.Items.Contains(sanitized)) { listbxData.Items.Add(sanitized); }
-
-                    }
-                    break;
+                string sanitized = _string.Substring(startIndex, length);
+                return sanitized;
             }
+            return _string;
         }
     }
 }

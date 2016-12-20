@@ -8,8 +8,7 @@ namespace MachineBackupInfo.Classes
 {
     public static class CachedInfo
     {
-        public static Dictionary<string, bool> PropertiesWithBackups;
-        public static Dictionary<string, bool> PropertiesWithoutBackups;
+        public static List<Property> PropertyData = new List<Property>();
 
     }
 }

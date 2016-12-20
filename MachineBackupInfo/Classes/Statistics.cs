@@ -69,9 +69,10 @@ namespace MachineBackupInfo.Classes
             return Directory.Exists(path) ? Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).Count() : 0;
         }
         //Gets number of Properties that have a backup file
-        public void PropertieWithBackups(string path)
+        public List<Property> PropertyData(string path)
         {
-
+            Property prop = new Property();
+            List<Property> data = new List<Property>();
             //Gets root directory path of Properties (Example: .\P0010 but not the children)
             var propDirectories = Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).ToArray();
 
@@ -83,7 +84,14 @@ namespace MachineBackupInfo.Classes
 
                 foreach (var c in children)
                 {
-                    string child = c;
+                    string child = c.ToString().ToLowerInvariant();
+
+
+                    prop.FullPath = child;
+                    prop.PropertyName = PropertyName(child);
+
+                   
+                    
 
                     if (Directory.GetDirectories(child).Count() > 0)
                     {
@@ -96,68 +104,41 @@ namespace MachineBackupInfo.Classes
                                 string[] files = Directory.GetFiles(p);
                                 bool containsBackup = files.Any(x => x.Contains(".vbk"));
 
-                                if (containsBackup)
-                                {
-                                    PropertiesWithBackupsAmt++;
-                                    PropertiesWithBackups.Add(p, containsBackup);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        //Gets number of Properties that have don't hav a backup file
-        public void PropertieWithoutBackups(string path)
-        {
-
-            //Gets root directory path of Properties (Example: .\P0010 but not the children)
-            var propDirectories = Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).ToArray();
-
-            //Directories in parent
-            foreach (var di in propDirectories)
-            {
-                //Main/Slave folder (some properties will have more (ex: 3 computers)
-                string[] children = Directory.GetDirectories(di);
-
-                foreach (var c in children)
-                {
-                    string child = c;
-
-                    if (Directory.GetDirectories(child).Count() <= 0)
-                    {
-                        string[] infant = Directory.GetDirectories(child);
-
-                        foreach (var p in infant)
-                        {
-                            if (Directory.Exists(p))
-                            {
-                                string[] files = Directory.GetFiles(p);
-                                bool containsBackup = files.Any(x => x.Contains(".vbk"));
-
-                                if (!containsBackup)
-                                {
-                                    PropertiesWithNoBackupsAmt++;
-                                    PropertiesWithoutBackups.Add(p, containsBackup);
-                                }
+                                prop.HasBackup = containsBackup ? true : false;
+                                prop.BackupSize = containsBackup ? 0 : 0;
                             }
                         }
                     }
                     else
                     {
-                        if(!PropertiesWithoutBackups.ContainsKey(child))
-                        {
-                            PropertiesWithoutBackups.Add(child, false);
-                        }
+                        prop.HasBackup = false;
+                        prop.BackupSize = 0;
                     }
+                    data.Add(new Property{ PropertyName = prop.PropertyName, BackupSize = prop.BackupSize, FullPath = prop.FullPath, HasBackup = prop.HasBackup });
+
                 }
+            }
+            return data;
+        }
+        private string PropertyName(string path)
+        {
+            try
+            {
+                string propName = path.Substring(58, 5);
+                return propName;
+            }
+            catch(IndexOutOfRangeException)
+            {
+                return path;
+            }
+            catch(Exception)
+            {
+                return path;
             }
         }
     }
 }
-
-     
-
+ 
 
 
                 

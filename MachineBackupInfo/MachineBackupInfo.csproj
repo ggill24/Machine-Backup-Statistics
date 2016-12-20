@@ -66,6 +66,7 @@
     <Compile Include="Classes\CachedInfo.cs" />
     <Compile Include="Classes\DataType.cs" />
     <Compile Include="Classes\IOHandler.cs" />
+    <Compile Include="Classes\Property.cs" />
     <Compile Include="Windows\BackUpInfoWindow.xaml.cs">
       <DependentUpon>BackUpInfoWindow.xaml</DependentUpon>
     </Compile>

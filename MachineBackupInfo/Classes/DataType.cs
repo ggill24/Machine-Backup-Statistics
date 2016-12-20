@@ -8,7 +8,8 @@ namespace MachineBackupInfo.Classes
 {
     public enum DataType
     {
-        PropertiesWithBackups,
-        PropertiesWithNoBackups
+        Main,
+        Slave,
+        Other
     }
 }
