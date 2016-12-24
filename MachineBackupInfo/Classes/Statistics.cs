@@ -50,7 +50,7 @@ namespace MachineBackupInfo.Classes
         {
             return Directory.Exists(path) ? Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).Count() : 0;
         }
-        //Gets number of Properties that have a backup file
+        //Retrieves backup information for all properties
         public List<Property> PropertyData(string path)
         {
             Property prop = new Property();
@@ -108,6 +108,7 @@ namespace MachineBackupInfo.Classes
 
                                 if (!containsBackup) { prop.BackupSize = 0; prop.HasBackup = false; continue; }
 
+                                //TODO: get filesize of every backupfile and not just one
                                 long filesize = fiInfo.Where(x => x.Name.Contains(".vbk")).FirstOrDefault().Length;
 
                                 prop.BackupSize = Math.Round((filesize / 1024f) / 1024f, 0);

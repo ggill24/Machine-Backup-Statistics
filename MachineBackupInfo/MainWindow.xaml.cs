@@ -37,7 +37,7 @@ namespace MachineBackupInfo
             }
             catch(Exception)
             {
-                MessageBox.Show("Unable to create directories. Cache mode will be disabled.", "Error", MessageBoxButton.OK);
+                MessageBox.Show("Unable to create directories. Offline mode will be disabled", "Error", MessageBoxButton.OK);
                 chkBxCacheData.IsEnabled = false;
             }
             stats = new Statistics();
