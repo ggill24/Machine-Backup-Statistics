@@ -8,10 +8,11 @@ namespace MachineBackupInfo.Classes
 {
     public class Property
     {
-        public string FullPath { get; set; }
         public string PropertyName { get; set; }
+        public DataType Type { get; set; }
         public bool HasBackup { get; set; }
-        public long BackupSize { get; set; }
-  
+        public double BackupSize { get; set; }
+        public string FullPath { get; set; }
+
     }
 }

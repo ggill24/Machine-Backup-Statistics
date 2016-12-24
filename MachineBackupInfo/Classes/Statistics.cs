@@ -32,31 +32,13 @@ namespace MachineBackupInfo.Classes
         //Number of properties without backups
         public int PropertiesWithNoBackupsAmt { get; set; }
 
-        //Properties without backups
-        public Dictionary<string, bool> PropertiesWithoutBackups { get; set; }
-
-        //Properties with backups
-        public Dictionary<string, bool> PropertiesWithBackups { get; set; }
-
         //Users with backups
         public int UsersWithBackups { get; set; }
 
         //Users without backups
         public int UsersWithoutBackups { get; set; }
 
-        //Will Reuse Statistics Saved In Memory The First Time The Program Is Ran But Will Not Be Real Time (Will Speed Loading By A Lot Though)
-        public bool CacheData { get; set; }
-
-
-
-        public Statistics()
-        {
-            PropertiesWithoutBackups = new Dictionary<string, bool>();
-            PropertiesWithBackups = new Dictionary<string, bool>();
-
-        }
-
-        //Gets number of Directories in specified path
+         //Gets number of Directories in specified path
         public int DirectoryCount(string path)
         {
             //Returns Directory Path or 0 if path does not exist
@@ -76,22 +58,35 @@ namespace MachineBackupInfo.Classes
             //Gets root directory path of Properties (Example: .\P0010 but not the children)
             var propDirectories = Directory.GetDirectories(path).Where(x => Propertyrgx.IsMatch(x)).ToArray();
 
+            if (propDirectories == null) return data;
+
             //Directories in parent
             foreach (var di in propDirectories)
             {
                 //Main/Slave folder (some properties will have more (ex: 3 computers)
                 string[] children = Directory.GetDirectories(di);
 
+                if (children == null) return data;
+
                 foreach (var c in children)
                 {
                     string child = c.ToString().ToLowerInvariant();
 
+                    if (child.Contains(DataType.Main.ToString().ToLowerInvariant()))
+                    {
+                        prop.Type = DataType.Main;
+                    }
+                    else if(child.Contains(DataType.Slave.ToString().ToLowerInvariant()))
+                    {
+                        prop.Type = DataType.Slave;
+                    }
+                    else
+                    {
+                        prop.Type = DataType.Other;
+                    }
 
                     prop.FullPath = child;
                     prop.PropertyName = PropertyName(child);
-
-                   
-                    
 
                     if (Directory.GetDirectories(child).Count() > 0)
                     {
@@ -102,10 +97,22 @@ namespace MachineBackupInfo.Classes
                             if (Directory.Exists(p))
                             {
                                 string[] files = Directory.GetFiles(p);
-                                bool containsBackup = files.Any(x => x.Contains(".vbk"));
 
-                                prop.HasBackup = containsBackup ? true : false;
-                                prop.BackupSize = containsBackup ? 0 : 0;
+                                if(files == null) { continue; }
+
+                                DirectoryInfo dInfo = new DirectoryInfo(p);
+
+                                FileInfo[] fiInfo = dInfo.GetFiles();
+
+                                bool containsBackup = fiInfo.Any(x => x.Name.Contains(".vbk"));
+
+                                if (!containsBackup) { prop.BackupSize = 0; prop.HasBackup = false; continue; }
+
+                                long filesize = fiInfo.Where(x => x.Name.Contains(".vbk")).FirstOrDefault().Length;
+
+                                prop.BackupSize = Math.Round((filesize / 1024f) / 1024f, 0);
+                                prop.HasBackup = true;
+                               
                             }
                         }
                     }

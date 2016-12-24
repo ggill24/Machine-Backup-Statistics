@@ -30,8 +30,16 @@ namespace MachineBackupInfo
         public MainWindow()
         {
             InitializeComponent();
-            IOHandler.CreateRootPath();
-            IOHandler.CreateChildDirectories();
+            try
+            {
+                IOHandler.CreateRootPath();
+                IOHandler.CreateChildDirectories();
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("Unable to create directories. Cache mode will be disabled.", "Error", MessageBoxButton.OK);
+                chkBxCacheData.IsEnabled = false;
+            }
             stats = new Statistics();
             DataContext = stats;
 
@@ -39,8 +47,7 @@ namespace MachineBackupInfo
 
         private void btnPropertyData_Click(object sender, RoutedEventArgs e)
         {
-            stats.PropertiesWithBackups.Clear();
-            BackUpInfoWindow bkupInfoWindowWithBackups = new BackUpInfoWindow("Properties With Backups (Cached = " + stats.CacheData.ToString() + ")", stats.CacheData, stats);
+            BackUpInfoWindow bkupInfoWindowWithBackups = new BackUpInfoWindow("Properties With Backups", stats);
             bkupInfoWindowWithBackups.Show();
         }
 

@@ -63,7 +63,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Classes\CachedInfo.cs" />
     <Compile Include="Classes\DataType.cs" />
     <Compile Include="Classes\IOHandler.cs" />
     <Compile Include="Classes\Property.cs" />
